@@ -12,13 +12,24 @@ what each key does in the current mode.
 
 ## Dependencies
 
+These are the system dependencies for running this project:
+
 * nethack
 * tmux 
 * zsh (maybe not in future)
+
+## Building
+
+1. Update submodules to download dependencies
+
+        git submodule update --init
+
+2. Build binaries
+
+        make
 
 ## Running
 
 It works! Start a game of nethack with `zsh start.zsh`, and after your
 controller is plugged in, run `./main | zsh pipe.zsh`. Might have to modify
 source code to add support to your controller, or various features.
-
