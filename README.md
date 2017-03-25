@@ -10,6 +10,18 @@ The general idea is to make a modal interface where a button either executes a
 key macro, or opens a menu to access more macros. Menus are simply a display of
 what each key does in the current mode.
 
+### Resources
+
+Here are a couple resources to aid in further development.
+
+1. https://nethackwiki.com/wiki/Commands
+
+   Lists of all regular commands for nethack
+
+2. https://nethackwiki.com/wiki/Menu_controls
+
+   List of menu specific controls for nethack
+
 ## Dependencies
 
 These are the system dependencies for running this project:
