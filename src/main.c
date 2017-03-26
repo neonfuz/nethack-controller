@@ -10,16 +10,22 @@
 
 #define DEBUG 0
 
+typedef union {
+    char *str;
+} Arg;
+
 typedef struct Menu_s {
     char title[9];
+    struct Menu_s (*func)(struct Menu_s *context, Arg *arg);
+    Arg arg;
     struct Menu_s *up, *down, *left, *right, *a, *b, *x, *y, *l, *r, *select, *start;
 } Menu;
 
-void printMenu(Menu m) {
+Menu printMenu(Menu *m, Arg *arg) {
 
-#define GETTITLE(BUTTON) ((m.BUTTON->title != NULL) ? (m.BUTTON->title) : "")
+#define GETTITLE(BUTTON) ((m->BUTTON->title != NULL) ? (m->BUTTON->title) : "")
 
-    printf("\
+    fprintf(stderr, "\
  ______________________________________________________________\n\
 /  %8s  /  L           %8s           R  \\  %8s  \\\n\
 |-----------/                                      \\-----------|\n\
@@ -31,28 +37,36 @@ void printMenu(Menu m) {
 |          v             sel     start             B           |\n\
 \\                                                              /\n\
  \\------------------------------------------------------------/\n",
-           GETTITLE(l), m.title, GETTITLE(r),
+           GETTITLE(l), m->title, GETTITLE(r),
            GETTITLE(up), GETTITLE(x),
            GETTITLE(left), GETTITLE(right), GETTITLE(y), GETTITLE(a),
            GETTITLE(down), GETTITLE(select), GETTITLE(start), GETTITLE(b) );
 
 #undef GETTITLE
+
+    return *m;
+}
+
+Menu runMenu(Menu *m) {
+    return m->func(m, &m->arg);
 }
 
 int main(int argc, char **argv)
 {
     SDL_SetHint("SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS", "1");
+
     SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
 
     Menu m = {
         "MoveMode",
+        printMenu, NULL,
         .up = &(struct Menu_s){"MoveUp"},
         .down = &(struct Menu_s){"MoveDown"},
         .left = &(struct Menu_s){"MoveLeft"},
-        .right = &(struct Menu_s){"MoveRight"},
+        .right = &(struct Menu_s){"MoveRght"},
         .a = &(struct Menu_s){"Step"},
     };
-    printMenu(m);
+    runMenu(&m);
 
     SDL_GameControllerAddMappingsFromFile("dist/SDL_GameControllerDB/gamecontrollerdb.txt");
 
@@ -82,6 +96,11 @@ int main(int argc, char **argv)
 //            fprintf(stderr, "Event with type %x\n", e.type);
             switch(e.type) {
             case SDL_QUIT: goto QUIT;
+            case SDL_JOYAXISMOTION:
+                printf("Axis: %d, Value: %d\n", e.jaxis.axis, e.jaxis.value);
+//                switch(e.jaxis.axis) {
+//                }
+                break;
             case SDL_JOYBUTTONDOWN:
                 switch(e.jbutton.button) {
                 case 11: printf("send-keys %s\n", KEY_UP); break;
