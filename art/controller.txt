@@ -1,0 +1,13 @@
+
+
+ ______________________________________________________________
+/  xxxxxxxx  /  L                              R  \  xxxxxxxx  \
+|-----------/                                      \-----------|
+|       xxxxxxxx                                xxxxxxxx       |
+|          ^                                       Y           |
+|  xxxxxxxx  xxxxxxxx                      xxxxxxxx  xxxxxxxx  |
+|     <         >                             X         A      |
+|       xxxxxxxx      xxxxxxxx  xxxxxxxx        xxxxxxxx       |
+|          v             sel     start             B           |
+\                                                              /
+ \------------------------------------------------------------/

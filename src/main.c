@@ -10,10 +10,49 @@
 
 #define DEBUG 0
 
+typedef struct Menu_s {
+    char title[9];
+    struct Menu_s *up, *down, *left, *right, *a, *b, *x, *y, *l, *r, *select, *start;
+} Menu;
+
+void printMenu(Menu m) {
+
+#define GETTITLE(BUTTON) ((m.BUTTON->title != NULL) ? (m.BUTTON->title) : "")
+
+    printf("\
+ ______________________________________________________________\n\
+/  %8s  /  L           %8s           R  \\  %8s  \\\n\
+|-----------/                                      \\-----------|\n\
+|       %8s                                %8s       |\n\
+|          ^                                       Y           |\n\
+|  %8s  %8s                      %8s  %8s  |\n\
+|     <         >                             X         A      |\n\
+|       %8s      %8s  %8s        %8s       |\n\
+|          v             sel     start             B           |\n\
+\\                                                              /\n\
+ \\------------------------------------------------------------/\n",
+           GETTITLE(l), m.title, GETTITLE(r),
+           GETTITLE(up), GETTITLE(x),
+           GETTITLE(left), GETTITLE(right), GETTITLE(y), GETTITLE(a),
+           GETTITLE(down), GETTITLE(select), GETTITLE(start), GETTITLE(b) );
+
+#undef GETTITLE
+}
+
 int main(int argc, char **argv)
 {
     SDL_SetHint("SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS", "1");
     SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
+
+    Menu m = {
+        "MoveMode",
+        .up = &(struct Menu_s){"MoveUp"},
+        .down = &(struct Menu_s){"MoveDown"},
+        .left = &(struct Menu_s){"MoveLeft"},
+        .right = &(struct Menu_s){"MoveRight"},
+        .a = &(struct Menu_s){"Step"},
+    };
+    printMenu(m);
 
     SDL_GameControllerAddMappingsFromFile("dist/SDL_GameControllerDB/gamecontrollerdb.txt");
 
