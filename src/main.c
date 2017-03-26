@@ -27,7 +27,6 @@ char sdlToHack(int sdl_hat) {
 
 #define UPDATE_FREQUENCY 1000
 
-#define DEBUG 0
 
 typedef union {
     char *str;
@@ -89,25 +88,10 @@ int main(int argc, char **argv)
 
     SDL_GameControllerAddMappingsFromFile("dist/SDL_GameControllerDB/gamecontrollerdb.txt");
 
-    do {
-        int joysticks = SDL_NumJoysticks();
-        if(DEBUG) fprintf(stderr, "Detected %d controllers.\n", joysticks);
-        assert(1 == joysticks);
-    } while(0);
+    assert(1 == SDL_NumJoysticks());
 
     SDL_Joystick *joy = SDL_JoystickOpen(0);
 
-    if(DEBUG) {
-        if (joy) {
-            fprintf(stderr, "Opened Joystick 0\n");
-            fprintf(stderr, "Name: %s\n", SDL_JoystickNameForIndex(0));
-            fprintf(stderr, "Number of Axes: %d\n", SDL_JoystickNumAxes(joy));
-            fprintf(stderr, "Number of Buttons: %d\n", SDL_JoystickNumButtons(joy));
-            fprintf(stderr, "Number of Balls: %d\n", SDL_JoystickNumBalls(joy));
-        } else {
-            fprintf(stderr, "Couldn't open Joystick 0\n");
-        }
-    }
     int hat = SDL_HAT_CENTERED;
 
     SDL_Event e;
