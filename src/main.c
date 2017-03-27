@@ -69,6 +69,73 @@ Menu runMenu(Menu *m) {
     return m->func(m, &m->arg);
 }
 
+typedef enum { E_NULL, E_HAT, E_BUTTON } EventType;
+
+typedef struct {
+    EventType type;
+} GenericEvent;
+
+typedef struct {
+    EventType type;
+    int newHat;
+} HatEvent;
+
+typedef struct {
+    EventType type;
+    char key;
+    SDL_bool state;
+} ButtonEvent;
+
+typedef union {
+    EventType type;
+    GenericEvent generic;
+    HatEvent hat;
+    ButtonEvent button;
+} Event;
+
+Event generateEvent(SDL_Event e) {
+    static int hat = SDL_HAT_CENTERED;
+    int newHat = hat;
+
+    switch (e.type) {
+    case SDL_JOYAXISMOTION:
+        /* Handle joystick motion events by updating newHat, return hat event
+         * only if hat != newHat */
+        switch(e.jaxis.axis) {
+        case 0: // Horizontal
+            if (e.jaxis.value > DEADZONE) // Right
+                newHat = (hat & (SDL_HAT_UP | SDL_HAT_DOWN)) | SDL_HAT_RIGHT;
+            else if (e.jaxis.value < -DEADZONE) // Left
+                newHat = (hat & (SDL_HAT_UP | SDL_HAT_DOWN)) | SDL_HAT_LEFT;
+            else
+                newHat = hat & (SDL_HAT_UP | SDL_HAT_DOWN);
+            break;
+        case 1: // Vertical
+            if (e.jaxis.value > DEADZONE) // Down
+                newHat = (hat & (SDL_HAT_LEFT | SDL_HAT_RIGHT)) | SDL_HAT_DOWN;
+            else if (e.jaxis.value < -DEADZONE) // Up
+                newHat = (hat & (SDL_HAT_LEFT | SDL_HAT_RIGHT)) | SDL_HAT_UP;
+            else
+                newHat = hat & (SDL_HAT_LEFT | SDL_HAT_RIGHT);
+            break;
+        }
+        if(newHat == hat) return (Event){ .type = E_NULL };
+        else return (Event){ .hat = { E_HAT, newHat } };
+        break;
+    case SDL_JOYBUTTONDOWN:
+    case SDL_JOYBUTTONUP:
+        /* Simple button event converter */
+        return (Event){ .button = {
+                E_BUTTON, e.jbutton.button, e.jbutton.state }};
+    default:
+        return (Event){ .type = E_NULL};
+    }
+}
+
+Menu applyEvent(Event e, Menu m) {
+    return m;
+}
+
 int main(int argc, char **argv)
 {
     SDL_SetHint("SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS", "1");
@@ -101,49 +168,10 @@ int main(int argc, char **argv)
 //            fprintf(stderr, "Event with type %x\n", e.type);
             switch(e.type) {
             case SDL_QUIT: goto QUIT;
-            case SDL_JOYAXISMOTION:
-//                printf("Axis: %d, Value: %d\n", e.jaxis.axis, e.jaxis.value);
-                switch(e.jaxis.axis) {
-                case 0: // Horizontal
-                    if (e.jaxis.value > DEADZONE) { // Right
-                        hat &= SDL_HAT_UP | SDL_HAT_DOWN;
-                        hat |= SDL_HAT_RIGHT;
-                    } else if (e.jaxis.value < -DEADZONE) { // Left
-                        hat &= SDL_HAT_UP | SDL_HAT_DOWN;
-                        hat |= SDL_HAT_LEFT;
-                    } else {
-                        hat &= SDL_HAT_UP | SDL_HAT_DOWN;
-                    }
-                    break;
-                case 1: // Vertical
-                    if (e.jaxis.value > DEADZONE) { // Down
-                        hat &= SDL_HAT_LEFT | SDL_HAT_RIGHT;
-                        hat |= SDL_HAT_DOWN;
-                    } else if (e.jaxis.value < -DEADZONE) { // Up
-                        hat &= SDL_HAT_LEFT | SDL_HAT_RIGHT;
-                        hat |= SDL_HAT_UP;
-                    } else {
-                        hat &= SDL_HAT_LEFT | SDL_HAT_RIGHT;
-                    }
-                    break;
-                default: break;
-                }
-                break;
             case SDL_JOYBUTTONDOWN:
-                switch(e.jbutton.button) {
-                case 0:  printf("send-keys %c\n", sdlToHack(hat, shift)); break;
-                case 1:  printf("send-keys ,\n"); break;
-                case 5: shift = e.jbutton.state; break;
-                case 6:  printf("send-keys \";\"\n"); break;
-                case 7:  printf("send-keys Enter\n"); break;
-                default: fprintf(stderr, "other button %d pressed.\n", e.jbutton.button);
-                }
-                fflush(stdout);
+            case SDL_JOYAXISMOTION:
+generateEvent(e);
                 break;
-            case SDL_JOYBUTTONUP:
-                switch(e.jbutton.button) {
-                case 5: shift = e.jbutton.state; break;
-                }
             default: break;
             }
         }
