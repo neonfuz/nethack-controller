@@ -1,0 +1,28 @@
+* Things that need to be added to the keymap
+** DONE [s] searching
+   CLOSED: [2017-03-26 Sun 20:20]
+ - standard step key (A) now searches
+   - regular . can be accessed with shift (A)
+** DONE [,] Picking up items
+   CLOSED: [2017-03-26 Sun 20:30]
+ - probably set to (B)
+** DONE [;] What is
+   CLOSED: [2017-03-26 Sun 20:30]
+ - select
+** DONE [Enter] Enter
+   CLOSED: [2017-03-26 Sun 20:32]
+ - start button
+** TODO [<>] Stairs
+
+* Button notes
+ - These are the keycodes of buttons observed on my own development controller.
+| title  | keycode |
+|--------+---------|
+| A      |       0 |
+| B      |       1 |
+| X      |       2 |
+| Y      |       3 |
+| L      |       4 |
+| R      |       5 |
+| select |       6 |
+| start  |       7 |
