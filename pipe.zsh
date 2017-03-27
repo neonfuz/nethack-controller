@@ -1,3 +1,3 @@
-#!/bin/sh
+#!/bin/zsh
 
 tmux -CCS ./socket attach

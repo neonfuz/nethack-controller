@@ -1,3 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 
 tmux -S ./socket new-session nethack
+

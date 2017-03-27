@@ -28,6 +28,7 @@ These are the system dependencies for running this project:
 
 * nethack
 * tmux 
+* zsh (maybe not in future)
 
 ## Building
 
@@ -41,6 +42,6 @@ These are the system dependencies for running this project:
 
 ## Running
 
-It works! Start a game of nethack with `sh start.sh`, and after your
-controller is plugged in, run `./main | sh pipe.sh`. Might have to modify
+It works! Start a game of nethack with `zsh start.zsh`, and after your
+controller is plugged in, run `./main | zsh pipe.zsh`. Might have to modify
 source code to add support to your controller, or various features.
