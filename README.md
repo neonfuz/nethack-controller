@@ -28,7 +28,7 @@ These are the system dependencies for running this project:
 
 * nethack
 * tmux 
-* zsh (maybe not in future)
+* zsh (needed because piping to regular sh buffers)
 
 ## Building
 
