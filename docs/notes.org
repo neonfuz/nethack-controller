@@ -1,3 +1,7 @@
+* Dev steps
+** TODO Run tmux internally instead of piping
+** TODO Handle inventory, and menus
+
 * Things that need to be added to the keymap
 ** DONE [s] searching
    CLOSED: [2017-03-26 Sun 20:20]
@@ -13,6 +17,17 @@
    CLOSED: [2017-03-26 Sun 20:32]
  - start button
 ** TODO [<>] Stairs
+** TODO [^d][k] kick
+** TODO [@] Toggle auto pickup
+ - thinking shift b
+ - maybe not though, because shift b is too easy, better used for more often
+   used controls.
+** TODO [i] Inventory
+** TODO [p] Pay
+
+* Dev Thoughts
+** TODO Swap controls: a = [Enter], b = move, y = [,]
+
 
 * Button notes
  - These are the keycodes of buttons observed on my own development controller.
