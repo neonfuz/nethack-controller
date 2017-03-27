@@ -1,13 +1,10 @@
 #include <SDL2/SDL.h>
 #include <assert.h>
 
+#include "event.h"
+
 // Software is being developed on a sytsem with terrible drivers that sometimes make neutral = 128, 129 deadzone should fix this.
 #define DEADZONE 129
-
-#define KEY_UP "k"
-#define KEY_DOWN "j"
-#define KEY_LEFT "h"
-#define KEY_RIGHT "l"
 
 static const
 char sdlToHack(int sdl_hat, SDL_bool shift) {
@@ -25,21 +22,17 @@ char sdlToHack(int sdl_hat, SDL_bool shift) {
     }
 };
 
-#define UPDATE_FREQUENCY 1000
-
-
-typedef union {
-    char *str;
-} Arg;
-
 typedef struct Menu_s {
     char title[9];
-    struct Menu_s (*func)(struct Menu_s *context, Arg *arg);
-    Arg arg;
+    struct {
+        int hat;
+        unsigned shift :1;
+        unsigned ctrl :1;
+    } state;
     struct Menu_s *up, *down, *left, *right, *a, *b, *x, *y, *l, *r, *select, *start;
 } Menu;
 
-Menu printMenu(Menu *m, Arg *arg) {
+Menu printMenu(Menu *m) {
 
 #define GETTITLE(BUTTON) ((m->BUTTON->title != NULL) ? (m->BUTTON->title) : "")
 
@@ -65,37 +58,15 @@ Menu printMenu(Menu *m, Arg *arg) {
     return *m;
 }
 
-Menu runMenu(Menu *m) {
-    return m->func(m, &m->arg);
-}
-
-typedef enum { E_NULL, E_HAT, E_BUTTON } EventType;
-
-typedef struct {
-    EventType type;
-} GenericEvent;
-
-typedef struct {
-    EventType type;
-    int newHat;
-} HatEvent;
-
-typedef struct {
-    EventType type;
-    char key;
-    SDL_bool state;
-} ButtonEvent;
-
-typedef union {
-    EventType type;
-    GenericEvent generic;
-    HatEvent hat;
-    ButtonEvent button;
-} Event;
-
 Event generateEvent(SDL_Event e) {
     static int hat = SDL_HAT_CENTERED;
     int newHat = hat;
+
+    static const char buttonMap[] = {
+        [0] = 'a', [1] = 'b', [2] = 'x', [3] = 'y',
+        [4] = 'L', [5] = 'R',
+        [6] = 'o', [7] = 's',
+    };
 
     switch (e.type) {
     case SDL_JOYAXISMOTION:
@@ -126,14 +97,33 @@ Event generateEvent(SDL_Event e) {
     case SDL_JOYBUTTONUP:
         /* Simple button event converter */
         return (Event){ .button = {
-                E_BUTTON, e.jbutton.button, e.jbutton.state }};
+                E_BUTTON, buttonMap[e.jbutton.button], e.jbutton.state }};
     default:
         return (Event){ .type = E_NULL};
     }
 }
 
-Menu applyEvent(Event e, Menu m) {
-    return m;
+Menu applyEvent(Event e, Menu m)
+{
+    switch(e.type) {
+    case E_HAT:
+        m.state.hat = e.hat.newHat;
+        return m;
+    case E_BUTTON:
+        switch(e.button.key) {
+        case 'L': m.state.ctrl = e.button.state; break;
+        case 'R': m.state.shift = e.button.state; break;
+        case 'a':
+            printf("send-keys %s%c\n",
+                   m.state.ctrl ? "C-" : "",
+                   sdlToHack(m.state.hat, m.state.shift));
+            break;
+        case 'b': printf("send-keys ,\n"); break;
+        case 's':  printf("send-keys Enter\n"); break;
+        case 'o':  printf("send-keys \\;\n"); break;
+        }
+    case E_NULL: return m;
+    }
 }
 
 int main(int argc, char **argv)
@@ -143,15 +133,14 @@ int main(int argc, char **argv)
     SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
 
     Menu m = {
-        "MoveMode",
-        printMenu, NULL,
-        .up = &(struct Menu_s){"MoveUp"},
-        .down = &(struct Menu_s){"MoveDown"},
-        .left = &(struct Menu_s){"MoveLeft"},
-        .right = &(struct Menu_s){"MoveRght"},
-        .a = &(struct Menu_s){"Step"},
+        "movemode",
+        { 0 },
+        .up =    &(Menu){"moveup"},
+        .down =  &(Menu){"movedown"},
+        .left =  &(Menu){"moveleft"},
+        .right = &(Menu){"moverght"},
+        .a =     &(Menu){"step"},
     };
-    runMenu(&m);
 
     SDL_GameControllerAddMappingsFromFile("dist/SDL_GameControllerDB/gamecontrollerdb.txt");
 
@@ -163,19 +152,20 @@ int main(int argc, char **argv)
     SDL_bool shift = 0;
 
     SDL_Event e;
-    while (1) {
-        while(SDL_WaitEventTimeout(&e, UPDATE_FREQUENCY)) {
-//            fprintf(stderr, "Event with type %x\n", e.type);
-            switch(e.type) {
-            case SDL_QUIT: goto QUIT;
-            case SDL_JOYBUTTONDOWN:
-            case SDL_JOYAXISMOTION:
-generateEvent(e);
-                break;
-            default: break;
-            }
+    while(SDL_WaitEvent(&e)) {
+        switch(e.type) {
+        case SDL_QUIT: goto QUIT;
+        case SDL_JOYBUTTONDOWN:
+        case SDL_JOYAXISMOTION:
+            m = applyEvent(generateEvent(e), m);
+            break;
+        default: break;
         }
     }
+
+    fprintf(stderr, "Error: Broke out of event loop early: \"%s\"\n",
+            SDL_GetError());
+
 QUIT:
 
     SDL_Quit();
