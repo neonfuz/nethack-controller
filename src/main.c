@@ -137,6 +137,7 @@ int main(int argc, char **argv)
                 case 14: printf("send-keys %s\n", KEY_RIGHT); break;
                 default: fprintf(stderr, "other button %d pressed.\n", e.jbutton.button);
                 }
+                fflush(stdout);
                 break;
             default: break;
             }
