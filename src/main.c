@@ -126,6 +126,7 @@ Menu applyEvent(Event e, Menu m)
         case 's':  printf("send-keys Enter\n"); break;
         case 'o':  printf("send-keys \\;\n"); break;
         }
+        return m;
     case E_NULL: return m;
     }
 }
