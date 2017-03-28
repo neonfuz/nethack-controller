@@ -153,9 +153,6 @@ int main(int argc, char **argv)
 
     SDL_Joystick *joy = SDL_JoystickOpen(0);
 
-    int hat = SDL_HAT_CENTERED;
-    SDL_bool shift = 0;
-
     SDL_Event e;
     while(SDL_WaitEvent(&e)) {
         switch(e.type) {
