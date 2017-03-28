@@ -90,8 +90,12 @@ Event generateEvent(SDL_Event e) {
                 newHat = hat & (SDL_HAT_LEFT | SDL_HAT_RIGHT);
             break;
         }
-        if(newHat == hat) return (Event){ .type = E_NULL };
-        else return (Event){ .hat = { E_HAT, newHat } };
+        if(newHat == hat) {
+            return (Event){ .type = E_NULL };
+        } else {
+            hat = newHat;
+            return (Event){ .hat = { E_HAT, newHat } };
+        }
         break;
     case SDL_JOYBUTTONDOWN:
     case SDL_JOYBUTTONUP:
