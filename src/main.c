@@ -158,6 +158,7 @@ int main(int argc, char **argv)
         switch(e.type) {
         case SDL_QUIT: goto QUIT;
         case SDL_JOYBUTTONDOWN:
+        case SDL_JOYBUTTONUP:
         case SDL_JOYAXISMOTION:
             m = applyEvent(generateEvent(e), m);
             break;
