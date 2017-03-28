@@ -118,13 +118,13 @@ Menu applyEvent(Event e, Menu m)
         case 'L': m.state.ctrl = e.button.state; break;
         case 'R': m.state.shift = e.button.state; break;
         case 'a':
-            printf("send-keys %s%c\n",
-                   m.state.ctrl ? "C-" : "",
-                   sdlToHack(m.state.hat, m.state.shift));
+            if(e.button.state)
+                printf("send-keys %s%c\n", m.state.ctrl ? "C-" : "",
+                       sdlToHack(m.state.hat, m.state.shift));
             break;
-        case 'b': printf("send-keys ,\n"); break;
-        case 's':  printf("send-keys Enter\n"); break;
-        case 'o':  printf("send-keys \\;\n"); break;
+        case 'b': if(e.button.state) printf("send-keys ,\n"); break;
+        case 's': if(e.button.state) printf("send-keys Enter\n"); break;
+        case 'o': if(e.button.state) printf("send-keys \\;\n"); break;
         }
         fflush(stdout);
         return m;
