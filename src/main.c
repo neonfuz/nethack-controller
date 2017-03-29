@@ -123,7 +123,7 @@ Menu applyEvent(Event e, Menu m)
                        sdlToHack(m.state.hat, m.state.shift));
             break;
         case 'b': if(e.button.state) printf("send-keys ,\n"); break;
-        case 's': if(e.button.state) printf("send-keys Enter\n"); break;
+        case 's': if(e.button.state) printf("send-keys \" \"\n"); break;
         case 'o': if(e.button.state) printf("send-keys \\;\n"); break;
         }
         fflush(stdout);
