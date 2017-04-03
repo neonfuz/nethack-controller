@@ -25,6 +25,7 @@
 ** TODO [i] Inventory
 ** TODO [p] Pay
 
+** TODO [x] Weapon switching
 * Dev Thoughts
 ** TODO Swap controls: a = [Enter], b = move, y = [,]
 
