@@ -1,0 +1,7 @@
+[package]
+name = "nethack-controller"
+version = "0.1.0"
+authors = ["neonfuz <neonfuz@gmail.com>"]
+
+[dependencies]
+sdl2 = "0.29.0"

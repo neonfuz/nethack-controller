@@ -1,0 +1,6 @@
+* About
+ - This is a WIP rust rewrite of this project, intended to eventually replace
+   the c based version.
+* Todo list
+** TODO Emulate functionality of original c program
+** TODO run tmux using std::process instead of pipe
