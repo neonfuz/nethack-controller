@@ -1,5 +1,6 @@
 * Dev steps
-** TODO Run tmux internally instead of piping
+** DONE Run tmux internally instead of piping
+   CLOSED: [2017-04-05 Wed 17:31]
 ** TODO Handle inventory, and menus
 
 * Things that need to be added to the keymap

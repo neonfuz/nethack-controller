@@ -10,6 +10,9 @@ The general idea is to make a modal interface where a button either executes a
 key macro, or opens a menu to access more macros. Menus are simply a display of
 what each key does in the current mode.
 
+Also considering switching to rust, a heavy WIP version of this is in the
+`rustport` folder.
+
 ### Resources
 
 Here are a couple resources to aid in further development.
@@ -28,7 +31,6 @@ These are the system dependencies for running this project:
 
 * nethack
 * tmux 
-* zsh (needed because piping to regular sh buffers)
 
 ## Building
 
@@ -42,6 +44,7 @@ These are the system dependencies for running this project:
 
 ## Running
 
-It works! Start a game of nethack with `zsh start.zsh`, and after your
-controller is plugged in, run `./main | zsh pipe.zsh`. Might have to modify
-source code to add support to your controller, or various features.
+It works! Start a game of nethack with `./start.sh`, make sure your controller
+is plugged in and run `./main`. Currently the software is developed for the
+iBuffalo snes controller, on MacOS and Linux. You may need to modify the source
+to get your controller to work, or to add more controls and features.

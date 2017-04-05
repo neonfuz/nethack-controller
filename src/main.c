@@ -6,6 +6,9 @@
 // Software is being developed on a sytsem with terrible drivers that sometimes make neutral = 128, 129 deadzone should fix this.
 #define DEADZONE 129
 
+static
+FILE *tmux;
+
 static const
 char sdlToHack(int sdl_hat, SDL_bool shift) {
     switch(sdl_hat) {
@@ -36,7 +39,7 @@ Menu printMenu(Menu *m) {
 
 #define GETTITLE(BUTTON) ((m->BUTTON->title != NULL) ? (m->BUTTON->title) : "")
 
-    fprintf(stderr, "\
+    printf("\
  ______________________________________________________________\n\
 /  %8s  /  L           %8s           R  \\  %8s  \\\n\
 |-----------/                                      \\-----------|\n\
@@ -119,14 +122,14 @@ Menu applyEvent(Event e, Menu m)
         case 'R': m.state.shift = e.button.state; break;
         case 'a':
             if(e.button.state)
-                printf("send-keys %s%c\n", m.state.ctrl ? "C-" : "",
+                fprintf(tmux, "send-keys %s%c\n", m.state.ctrl ? "C-" : "",
                        sdlToHack(m.state.hat, m.state.shift));
             break;
-        case 'b': if(e.button.state) printf("send-keys ,\n"); break;
-        case 's': if(e.button.state) printf("send-keys \" \"\n"); break;
-        case 'o': if(e.button.state) printf("send-keys \\;\n"); break;
+        case 'b': if(e.button.state) fprintf(tmux, "send-keys ,\n"); break;
+        case 's': if(e.button.state) fprintf(tmux, "send-keys \" \"\n"); break;
+        case 'o': if(e.button.state) fprintf(tmux, "send-keys \\;\n"); break;
         }
-        fflush(stdout);
+        fflush(tmux);
         return m;
     case E_NULL: return m;
     }
@@ -134,6 +137,9 @@ Menu applyEvent(Event e, Menu m)
 
 int main(int argc, char **argv)
 {
+    tmux = popen("tmux -CS ./socket attach", "w");
+    assert(tmux);
+
     SDL_SetHint("SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS", "1");
 
     SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
